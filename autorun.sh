@@ -4,13 +4,13 @@
 # 自動実行用のスクリプト
 # README記載のOnline提出前のコード実行手順をスクリプトで一撃でできるようにしてる
 
-LOOP_TIMES=10
-SLEEP_SEC=180
+LOOP_TIMES=1
+SLEEP_SEC=360
 
 # check
-AICHALLENGE2023_DEV_REPOSITORY="${HOME}/aichallenge2023-racing"
-if [ ! -d ${AICHALLENGE2023_DEV_REPOSITORY} ]; then
-   "please clone ~/aichallenge2023-racing on home directory (${AICHALLENGE2023_DEV_REPOSITORY})!!"
+AICHALLENGE2024_DEV_REPOSITORY="${HOME}/work/aichallenge-2024"
+if [ ! -d ${AICHALLENGE2024_DEV_REPOSITORY} ]; then
+   "please clone ~/work/aichallenge-2024 on home directory (${AICHALLENGE2024_DEV_REPOSITORY})!!"
    return
 fi
 
@@ -21,14 +21,20 @@ function run_autoware_awsim(){
     # Autowareを実行する
     # run AUTOWARE
     AUTOWARE_ROCKER_NAME="autoware_rocker_container"
-    AUTOWARE_ROCKER_EXEC_COMMAND="cd ~/aichallenge2023-racing/docker/evaluation; \
-    			bash advance_preparations.sh;\
- 			bash build_docker.sh;\
-    		        rocker --nvidia --x11 --user --net host --privileged --volume output:/output --name ${AUTOWARE_ROCKER_NAME} -- aichallenge-eval" # run_container.shの代わりにrockerコマンド直接実行(コンテナに名前をつける必要がある)
-
+    AUTOWARE_ROCKER_EXEC_COMMAND="cd ${AICHALLENGE2024_DEV_REPOSITORY}; \
+                bash docker_run.sh dev cpu &&\
+                cd /aichallenge && \
+                bash build_autoware.bash && \
+    			bash run_evaluation.bash"
     echo "-- run AUTOWARE rocker... -->"    
     echo "CMD: ${AUTOWARE_ROCKER_EXEC_COMMAND}"
-    gnome-terminal -- bash -c "${AUTOWARE_ROCKER_EXEC_COMMAND}" &
+    # taichi mofify
+    # gnome-terminal -- bash -c "${AUTOWARE_ROCKER_EXEC_COMMAND}" &
+    # cd ${AICHALLENGE2024_DEV_REPOSITORY} && \
+    # bash docker_run.sh dev cpu && \
+    cd /aichallenge && \
+    bash build_autoware.bash && \
+    bash run_evaluation.bash
     sleep 5
 }
 
@@ -99,9 +105,9 @@ function preparation(){
 # main処理
 function do_game(){
     SLEEP_SEC=$1
-    preparation
+    # preparation
     run_autoware_awsim
-    get_result ${SLEEP_SEC}
+    # get_result ${SLEEP_SEC}
 }
 
 # 念のためパッチを保存する処理
@@ -150,6 +156,6 @@ do
     do_game ${SLEEP_SEC}
 done
 
-docker image prune -f
-docker builder prune -f
+# docker image prune -f
+# docker builder prune -f
 
