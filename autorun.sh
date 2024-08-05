@@ -30,12 +30,13 @@ function run_autoware_awsim(){
     echo "CMD: ${AUTOWARE_ROCKER_EXEC_COMMAND}"
     # taichi mofify
     # gnome-terminal -- bash -c "${AUTOWARE_ROCKER_EXEC_COMMAND}" &
-    # cd ${AICHALLENGE2024_DEV_REPOSITORY} && \
-    # bash docker_run.sh dev cpu && \
-    cd /aichallenge && \
+    ROCKER_COMMAND="rocker exec -it test bash -c"
+    cd ${AICHALLENGE2024_DEV_REPOSITORY} && \
+    bash docker_run.sh dev cpu && \
+    ${ROCKER_COMMAND} "cd /aichallenge && \
     bash build_autoware.bash && \
-    bash run_evaluation.bash
-    sleep 5
+    bash run_evaluation.bash && \
+    sleep 5"
 }
 
 function get_result(){
